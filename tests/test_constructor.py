@@ -1,48 +1,41 @@
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 import locators
+import urls
 
 class TestConstructor:
-    # --- ТЕСТ 1: Переход к разделу «Булки» ---
     def test_transition_to_buns(self, driver):
-        driver.get("https://stellarburgers.education-services.ru/")
+        driver.get(urls.BASE_URL)
         
-        # Кликаем на "Соусы", чтобы прокрутить страницу вниз
+        # Кликаем на "Соусы", чтобы уйти с вкладки "Булки"
         driver.find_element(*locators.TAB_SAUCES).click()
-        WebDriverWait(driver, 10).until(EC.visibility_of_element_located(locators.HEADER_SAUCES))
         
-        # Теперь кликаем на "Булки", чтобы вернуться наверх
+        # Ждем, пока у Соусов появится класс current
+        WebDriverWait(driver, 10).until(
+            lambda d: "current" in d.find_element(*locators.TAB_SAUCES).get_attribute("class")
+        )
+        
+        # Кликаем на "Булки"
         driver.find_element(*locators.TAB_BUNS).click()
         
-        # Проверяем, что заголовок "Булки" стал виден на экране
-        # (он может быть перекрыт другим элементом, поэтому ждем именно visibility)
-        buns_header = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(locators.HEADER_BUNS)
+        # Исправление от ревьюера: Проверяем наличие класса 'current', ожидание внутри assert
+        assert WebDriverWait(driver, 10).until(
+            lambda d: "current" in d.find_element(*locators.TAB_BUNS).get_attribute("class")
         )
-        assert buns_header.is_displayed()
 
-    # --- ТЕСТ 2: Переход к разделу «Соусы» ---
     def test_transition_to_sauces(self, driver):
-        driver.get("https://stellarburgers.education-services.ru/")
+        driver.get(urls.BASE_URL)
         
-        # Кликаем на "Соусы"
         driver.find_element(*locators.TAB_SAUCES).click()
         
-        # Проверяем, что заголовок "Соусы" появился и виден
-        sauces_header = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(locators.HEADER_SAUCES)
+        assert WebDriverWait(driver, 10).until(
+            lambda d: "current" in d.find_element(*locators.TAB_SAUCES).get_attribute("class")
         )
-        assert sauces_header.is_displayed()
 
-    # --- ТЕСТ 3: Переход к разделу «Начинки» ---
     def test_transition_to_fillings(self, driver):
-        driver.get("https://stellarburgers.education-services.ru/")
+        driver.get(urls.BASE_URL)
         
-        # Кликаем на "Начинки"
         driver.find_element(*locators.TAB_FILLINGS).click()
         
-        # Проверяем, что заголовок "Начинки" появился и виден
-        fillings_header = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(locators.HEADER_FILLINGS)
+        assert WebDriverWait(driver, 10).until(
+            lambda d: "current" in d.find_element(*locators.TAB_FILLINGS).get_attribute("class")
         )
-        assert fillings_header.is_displayed()
